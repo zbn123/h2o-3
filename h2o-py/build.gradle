@@ -8,23 +8,21 @@ import static java.nio.file.StandardCopyOption.*;
 defaultTasks 'build_python'
 description = "H2O Python Package"
 
-java.lang.String pythonexe = "python"
-java.lang.String pipexe = "pip"
-if (System.env.VIRTUAL_ENV) {
-    pythonexe = "${System.env.VIRTUAL_ENV}/bin/python".toString()
-    pipexe = "${System.env.VIRTUAL_ENV}/bin/pip".toString()
-}
-
 dependencies {
     compile project(":h2o-assemblies:main")
 }
-
 
 def bv = new H2OBuildVersion(rootDir, version)
 
 ext {
     PROJECT_VERSION = bv.getProjectVersion()
     T               = getProjectDir().toString()
+    pythonexe       = findProperty("pythonExec") ?: "python"
+    pipexe          = findProperty("pipExec") ?: "pip"
+    if (System.env.VIRTUAL_ENV) {
+        pythonexe = "${System.env.VIRTUAL_ENV}/bin/python".toString()
+        pipexe = "${System.env.VIRTUAL_ENV}/bin/pip".toString()
+    }
 }
 
 

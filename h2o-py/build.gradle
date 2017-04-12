@@ -75,8 +75,8 @@ task smokeTest(type: Exec) {
     commandLine args
 }
 
-task cleanUpSmokeTest << {
-    new File([T, "tests/results"].join(File.separator)).deleteDir()
+task cleanUpSmokeTest(type: Delete) {
+    delete file("tests/results")
 }
 
 task cleanCoverageData(type: Delete) {

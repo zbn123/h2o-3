@@ -55,7 +55,7 @@ task buildDist(type: Exec) {
     dependsOn setProjectVersion
 
     doFirst {
-        file(buildDir, "tmp").mkdirs()
+        file("${buildDir}/tmp").mkdirs()
         standardOutput = new FileOutputStream("build/tmp/h2o-py_buildDist.out")
     }
     commandLine getOsSpecificCommandLine([pythonexe, "setup.py", "bdist_wheel"])
@@ -72,7 +72,7 @@ task smokeTest(type: Exec) {
     if (project.hasProperty("jacocoCoverage")) {
         args << '--jacoco'
     }
-    commandLine args
+    commandLine getOsSpecificCommandLine(args)
 }
 
 task cleanUpSmokeTest(type: Delete) {

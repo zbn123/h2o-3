@@ -128,7 +128,7 @@ ext {
     h2oRESTApiVersion = '3'
 
     getOsSpecificCommandLine = { List<GString> args ->
-        return Os.isFamily(Os.FAMILY_WINDOWS) ? ['cmd', '/c'] + args : args
+        return Os.isFamily(Os.FAMILY_WINDOWS) ? ['cmd', '/c'] + args : ['/bin/sh', '-c'] + args
     }
 
 }

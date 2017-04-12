@@ -25,16 +25,6 @@ ext {
     }
 }
 
-
-task makeOutputDir(type: Exec) {
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine getOsSpecificCommandLine(['if not exist "build\\tmp" mkdir', 'build\\tmp'])
-    } else {
-        commandLine getOsSpecificCommandLine(['mkdir', '-p', 'build/tmp'])
-    }
-}
-
-
 task setProjectVersion << {
     File INIT = new File([T, "h2o", "__init__.py"].join(File.separator))
     println "    INIT.path = " + INIT.path
@@ -60,14 +50,12 @@ task verifyDependencies(type: Exec) {
     ])
 }
 
-
-
 task buildDist(type: Exec) {
     dependsOn verifyDependencies
     dependsOn setProjectVersion
-    dependsOn makeOutputDir
 
     doFirst {
+        file(buildDir, "tmp").mkdirs()
         standardOutput = new FileOutputStream("build/tmp/h2o-py_buildDist.out")
     }
     commandLine getOsSpecificCommandLine([pythonexe, "setup.py", "bdist_wheel"])

@@ -30,7 +30,6 @@ def hdfs_import_bigCat():
         for ind in range(0,len(allFiles)):  # run tests for 3 different sizes per Tomas request
             print("*******  Parsing file {0} ********".format(allFiles[ind]))
             runPerformance("hdfs://{0}{1}".format(hdfs_name_node, allFiles[ind]), numTimes, reps[ind])
-
     else:
         raise EnvironmentError
 

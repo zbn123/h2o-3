@@ -23,6 +23,7 @@ ext {
         pythonexe = "${System.env.VIRTUAL_ENV}/bin/python".toString()
         pipexe = "${System.env.VIRTUAL_ENV}/bin/pip".toString()
     }
+    testsPath        = file("tests")
 }
 
 task setProjectVersion << {
@@ -56,18 +57,16 @@ task buildDist(type: Exec) {
 
     doFirst {
         file("${buildDir}/tmp").mkdirs()
-        standardOutput = new FileOutputStream("build/tmp/h2o-py_buildDist.out")
+        standardOutput = new FileOutputStream(file("${buildDir}/tmp/h2o-py_buildDist.out"))
     }
     commandLine getOsSpecificCommandLine([pythonexe, "setup.py", "bdist_wheel"])
 }
-
-File testsPath = new File("./tests")
 
 task smokeTest(type: Exec) {
     dependsOn build
     println "PyUnit smoke test (run.py --wipeall --testsize s)..."
     workingDir testsPath
-    commandLine 'pwd'
+
 	List<java.lang.String> args = [pythonexe, '../../scripts/run.py', '--wipeall', '--testsize', 's']
     if (project.hasProperty("jacocoCoverage")) {
         args << '--jacoco'

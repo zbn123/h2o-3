@@ -74,6 +74,10 @@ task smokeTest(type: Exec) {
     commandLine getOsSpecificCommandLine(args)
 }
 
+task pythonVersion(type: Exec) {
+    commandLine getOsSpecificCommandLine([pythonexe, "--version"])
+}
+
 task cleanUpSmokeTest(type: Delete) {
     delete file("tests/results")
 }

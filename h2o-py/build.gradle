@@ -76,6 +76,7 @@ task smokeTest(type: Exec) {
 
 task pythonVersion(type: Exec) {
     doFirst {
+        println(System.env.VIRTUAL_ENV)
         println(environment)
     }
     commandLine getOsSpecificCommandLine([pythonexe, "--version"])

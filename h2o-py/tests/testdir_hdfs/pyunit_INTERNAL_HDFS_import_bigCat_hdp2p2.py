@@ -20,8 +20,8 @@ def hdfs_import_bigCat():
     if hadoop_namenode_is_accessible:
         numTimes = 10
         hdfs_name_node = pyunit_utils.hadoop_namenode()
-        allFiles = ["/datasets/bigCatFiles/oneMillionCat50C.csv"]
-        reps = [50]
+        allFiles = ["/datasets/bigCatFiles/hundredThousandCat100C.csv"]
+        reps = [100]
 
         for ind in range(0,len(allFiles)):  # run tests for 3 different sizes per Tomas request
             print("*******  Parsing file {0} ********".format(allFiles[ind]))

@@ -6,6 +6,7 @@ public class H2OApp extends H2OStarter {
     if (H2O.checkUnsupportedJava())
       System.exit(1);
 
+
     start(args, System.getProperty("user.dir"));
   }
 

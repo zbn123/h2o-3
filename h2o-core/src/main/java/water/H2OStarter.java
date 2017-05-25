@@ -14,9 +14,13 @@ public class H2OStarter {
    * @param finalizeRestRegistration  close registration of REST API
    */
   public static void start(String[] args, String relativeResourcePath, boolean finalizeRestRegistration) {
+    Log.POST(2001,"Before anything in H2O Starter");
     long time0 = System.currentTimeMillis();
+    Log.POST(2002,"Did we get Time in Milli?");
     H2O.configureLogging();
+    Log.POST(2003,"Did we get configs in?");
     H2O.registerExtensions();
+    Log.POST(2004,"Extensions Registered?");
 
     // Fire up the H2O Cluster
     H2O.main(args);

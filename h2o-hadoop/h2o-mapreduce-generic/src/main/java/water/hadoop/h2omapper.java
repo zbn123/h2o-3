@@ -323,6 +323,8 @@ public class h2omapper extends Mapper<Text, Text, Text, Text> {
     catch (Exception e) {
       Log.POST(13, "Exception in main");
       Log.POST(13, e.toString());
+
+      e.printStackTrace();
     }
 
     Log.POST(14, "Waiting for exit");

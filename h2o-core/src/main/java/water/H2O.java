@@ -1908,6 +1908,7 @@ final public class H2O {
 
   // --------------------------------------------------------------------------
   public static void main( String[] args ) {
+    Log.POST(1001, "I am in Main");
     long time0 = System.currentTimeMillis();
 
    if (checkUnsupportedJava())
@@ -1916,6 +1917,7 @@ final public class H2O {
     // Record system start-time.
     if( !START_TIME_MILLIS.compareAndSet(0L, System.currentTimeMillis()) )
       return;                   // Already started
+    Log.POST(1002, "Passed by Start-time");
 
     // Copy all ai.h2o.* system properties to the tail of the command line,
     // effectively overwriting the earlier args.
@@ -1930,6 +1932,8 @@ final public class H2O {
       }
     }
 
+    Log.POST(1003,"Passed by Parameter Array");
+
     // Parse args
     String[] arguments = args2.toArray(args);
     parseArguments(arguments);
@@ -1943,10 +1947,12 @@ final public class H2O {
     } catch(URISyntaxException ex) {
       throw new RuntimeException("Invalid ice_root: " + ice + ", " + ex.getMessage());
     }
+    Log.POST(1004,"Just Passed ICE - Is that someting to do with Windows?");
 
     // Always print version, whether asked-for or not!
     long time2 = System.currentTimeMillis();
     printAndLogVersion(arguments);
+    Log.POST(1005,"Just captured Log Version!");
     if( ARGS.version ) {
       Log.flushStdout();
       exit(0);

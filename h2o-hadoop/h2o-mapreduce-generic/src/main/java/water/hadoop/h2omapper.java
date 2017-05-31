@@ -318,6 +318,15 @@ public class h2omapper extends Mapper<Text, Text, Text, Text> {
       //-------------------------------------------------------------
       System.out.println("ASHRITH 1");
       Log.printArgs(args);
+
+      for (int i = 0; i < args.length; i++) {
+        String s = args[i];
+        args[i] = (s == null) ? "" : s;
+      }
+
+      System.out.println("ASHRITH 1.5");
+      Log.printArgs(args);
+
       water.H2OApp.main(args);
       //-------------------------------------------------------------
       Log.POST(12, "After main");

@@ -1445,6 +1445,7 @@ public class h2odriver extends Configured implements Tool {
       addMapperArg(conf, "-ga_opt_out");
     }
     String hadoopVersion = calcHadoopVersion();
+    System.out.println("TOM DEBUG: calcHadoopVersion() is: " + ((hadoopVersion == null) ? "null" : hadoopVersion));
     addMapperArg(conf, "-ga_hadoop_ver", hadoopVersion);
     if (jksPass != null) {
       addMapperArg(conf, "-jks_pass", jksPass);

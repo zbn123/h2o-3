@@ -1207,6 +1207,9 @@ public class h2odriver extends Configured implements Tool {
   private int mapperConfLength = 0;
 
   private void addMapperArg(Configuration conf, String name) {
+    if (name == null) {
+      name = "";
+    }
     conf.set(h2omapper.H2O_MAPPER_ARGS_BASE + Integer.toString(mapperArgsLength), name);
     mapperArgsLength++;
   }

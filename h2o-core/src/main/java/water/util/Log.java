@@ -23,6 +23,22 @@ import java.util.ArrayList;
  **/
 abstract public class Log {
 
+  public static void printArgs(String[] arr) {
+    System.out.println("");
+    System.out.println("----- printArgs -----");
+    for (int i = 0; i < arr.length; i++) {
+      String s = arr[i];
+      System.out.println(i);
+      if (s == null) {
+        System.out.println("null");
+      }
+      else {
+        System.out.println(s);
+      }
+    }
+    System.out.println("----------");
+  }
+
   private static org.apache.log4j.Logger _logger = null;
 
   static String LOG_DIR = null;

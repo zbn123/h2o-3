@@ -1936,6 +1936,10 @@ final public class H2O {
 
     // Parse args
     String[] arguments = args2.toArray(args);
+
+    System.out.println("ASHRITH 2");
+    Log.printArgs(arguments);
+
     parseArguments(arguments);
 
     // Get ice path before loading Log or Persist class

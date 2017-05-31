@@ -316,6 +316,8 @@ public class h2omapper extends Mapper<Text, Text, Text, Text> {
       H2O.setEmbeddedH2OConfig(_embeddedH2OConfig);
       Log.POST(11, "After setEmbeddedH2OConfig");
       //-------------------------------------------------------------
+      System.out.println("ASHRITH 1");
+      Log.printArgs(args);
       water.H2OApp.main(args);
       //-------------------------------------------------------------
       Log.POST(12, "After main");

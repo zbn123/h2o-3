@@ -11,6 +11,7 @@ import water.JettyHTTPD;
 import water.TestUtil;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class CustomHttpFilterTest extends TestUtil {
   @BeforeClass static public void setup() {
     stall_till_cloudsize(1);
     new RegisterResourceRoots().register(System.getProperty("user.dir")+ "/..");  // h2o-core/.., register the web bits (so we don't get errs below)
-    H2O.finalizeRegistration();  // calls jetty.acceptRequests
+    H2O.startServingRestApi();  // calls jetty.acceptRequests
   }
 
   @Test public void testNoLog() throws Exception {
@@ -91,6 +92,15 @@ public class CustomHttpFilterTest extends TestUtil {
     when(request.getParameterMap()).thenReturn(new HashMap<String, String[]>());
 
     when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
+      @Override
+      public boolean isReady() {
+        return false;
+      }
+
+      @Override
+      public void setWriteListener(WriteListener writeListener) {
+      }
+
       @Override public void write(int b) throws IOException {
       }
     });

@@ -243,6 +243,7 @@ public class EasyPredictModelWrapperTest {
        }});
     }};
     Assert.assertEquals(expected, aep.reconstructedRowData);
+    Assert.assertEquals(21.708, aep.calcMSE(), 0.001);
   }
 
   private static class MyAutoEncoderModel extends GenModel {

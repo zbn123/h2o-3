@@ -2,7 +2,6 @@ package hex.tree.xgboost;
 
 import hex.*;
 import hex.glm.GLMTask;
-import io.netty.util.internal.NativeLibraryLoader;
 import ml.dmlc.xgboost4j.java.Booster;
 import ml.dmlc.xgboost4j.java.DMatrix;
 import ml.dmlc.xgboost4j.java.XGBoostError;

@@ -3130,13 +3130,13 @@ use.package <- function(package,
             is.character(version), length(version)==1L,
             is.logical(use), length(use)==1L)
 
-  if (package=="data.table") {
-    if (!("bit64" %in% rownames(installed.packages())) || (packageVersion("bit64") < as.package_version("0.9.7"))) {
-       # print out warning to install bit64 in order to use data.table
-      warning("data.table cannot be used without R package bit64 version 0.9.7 or higher.  Please upgrade to take advangage of data.table speedups.")
-      return(FALSE)
-    }
-  }
+  # if (package=="data.table") {
+  #   if (!("bit64" %in% rownames(installed.packages())) || (packageVersion("bit64") < as.package_version("0.9.7"))) {
+  #      # print out warning to install bit64 in order to use data.table
+  #     warning("data.table cannot be used without R package bit64 version 0.9.7 or higher.  Please upgrade to take advangage of data.table speedups.")
+  #     return(FALSE)
+  #   }
+  # }
   use && requireNamespace(package, quietly=TRUE) && (packageVersion(package) >= as.package_version(version))
 }
 
@@ -3386,7 +3386,7 @@ as.data.frame.H2OFrame <- function(x, ...) {
   
   if (verbose) pt <- proc.time()[[3]]
   if (getOption("h2o.fread", TRUE) && use.package("data.table")) {
-    df <- data.table::fread(ttt, blank.lines.skip = FALSE, na.strings = "", colClasses = colClasses, showProgress=FALSE, data.table=FALSE, ...)
+    df <- data.table::fread(ttt, blank.lines.skip = FALSE, na.strings = "", colClasses = colClasses, showProgress=FALSE, data.table=FALSE,  integer64="numeric", ...)
     if (sum(dates))
       for (i in which(dates)) data.table::setattr(df[[i]], "class", "POSIXct")
     fun <- "fread"

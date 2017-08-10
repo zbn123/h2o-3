@@ -27,7 +27,6 @@ Suggests: ggplot2,
           mlbench,
           Matrix,
           slam,
-          bit64 (>= 0.9.7),
           data.table (>= 1.9.8)
 Collate:
          'astfun.R'

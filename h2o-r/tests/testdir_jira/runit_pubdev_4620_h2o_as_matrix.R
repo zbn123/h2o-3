@@ -13,7 +13,33 @@ library(data.table)
 check.as.h2o<- function() {
   h2o.removeAll()
   browser()
-  dataframe <- data_frame(id = c(1:20),
+  dataframeOut1 <- data_frame(output = c('win','lose','win','lose','win','win','win','win','win','lose',
+                                         'lose','lose','lose','win','win','win','lose','win','lose','lose'),
+                              id = c(1:20),
+                              text = c("this is a this", 
+                                       "this is another",
+                                       'hello',
+                                       'what???',
+                                       "Wendy Wong", 
+                                       "is great", 
+                                       "intelligence", 
+                                       "strong and healthy",
+                                       "and positive", 
+                                       "and fuck the world",
+                                       "for thinking otherwise",
+                                       "now that I have", 
+                                       "to think ", 
+                                       "of another", 
+                                       "six sentences",
+                                       "what a chore!", 
+                                       "when would I be rich",
+                                       "next year?", 
+                                       "no more ", 
+                                       "than three years"),
+                              value = c(200,400,120,300,320,110,430,903,703,390,123, 300, 129, 213, 432, 135, 675, 290, 182, 300))
+  
+  
+  dataframeOut4 <- data_frame(id = c(1:20),
   text = c("this is a this", 
            "this is another",
            'hello',
@@ -38,7 +64,7 @@ check.as.h2o<- function() {
   output = c('win','lose','win','lose','win','win','win','win','win','lose',
              'lose','lose','lose','win','win','win','lose','win','lose','lose'))
   
-  dataframe2 <- data_frame(id = c(1:20),
+  dataframeOut2 <- data_frame(id = c(1:20),
                            output = c('win','lose','win','lose','win','win','win','win','win','lose',
                                       'lose','lose','lose','win','win','win','lose','win','lose','lose'),
                           text = c("this is a this", 
@@ -62,20 +88,54 @@ check.as.h2o<- function() {
                                    "no more ", 
                                    "than three years"),
                           value = c(200,400,120,300,320,110,430,903,703,390,123, 300, 129, 213, 432, 135, 675, 290, 182, 300))
+  dataframeOut3 <- data_frame(id = c(1:20),
+                              text = c("this is a this", 
+                                       "this is another",
+                                       'hello',
+                                       'what???',
+                                       "Wendy Wong", 
+                                       "is great", 
+                                       "intelligence", 
+                                       "strong and healthy",
+                                       "and positive", 
+                                       "and fuck the world",
+                                       "for thinking otherwise",
+                                       "now that I have", 
+                                       "to think ", 
+                                       "of another", 
+                                       "six sentences",
+                                       "what a chore!", 
+                                       "when would I be rich",
+                                       "next year?", 
+                                       "no more ", 
+                                       "than three years"),
+                              output = c('win','lose','win','lose','win','win','win','win','win','lose',
+                                         'lose','lose','lose','win','win','win','lose','win','lose','lose'),
+                              value = c(200,400,120,300,320,110,430,903,703,390,123, 300, 129, 213, 432, 135, 675, 290, 182, 300))
+  
+  train1 <- prepareFrame(dataframeOut1)
+  train2 <- prepareFrame(dataframeOut2)
+  train3 <- prepareFrame(dataframeOut3)
+  train4 <- prepareFrame(dataframeOut4)
 
-  train <- prepareFrame(dataframe)
- # train2 <- prepareFrame(dataframe2)
 
   # Train any H2O model (e.g GBM)
-  mymodel <- h2o.gbm(y = "y", training_frame = train,
-  distribution = "bernoulli", seed = 1)
-  summary(mymodel)
+  mymode1 <- runModel(train1)
+  summary(mymodel1)
   
-#  mymodel2 <- h2o.gbm(y="y", training_frame=train2, distribution='bernoulli', seed=1)
-#  summary(mymodel2)
+  mymodel2 <- runModel(train2)
+  summary(mymodel2)
+  
+  mymode3 <- runModel(train3)
+  summary(mymodel3)
 
+  mymodel4 <- runModel(train4)
+  summary(mymodel4)
 }
 
+runModel<-function(trainFrame) {
+  return(h2o.gbm(y="y", training_frame=trainFrame, distribution='bernoulli', seed=1))
+}
 prepareFrame<-function(dataframe) {
   prep_fun = tolower
   tok_fun = word_tokenizer

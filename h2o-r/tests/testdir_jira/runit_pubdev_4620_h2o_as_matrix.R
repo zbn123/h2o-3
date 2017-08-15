@@ -13,33 +13,86 @@ library(data.table)
 check.as.h2o<- function() {
   h2o.removeAll()
   browser()
-  dataframe <- data_frame(id = c(1,2,3,4,5,6,7,8,9,10,11),
-  text = c("this is a this", "this is another",'hello','what???',
-           "Wendy Wong", "is great", "intelligence", "strong and healthy",
-           "and positive", "and fuck the world","for thinking otherwise"),
-  value = c(200,400,120,300,320,110,430,903,703,390,123),
-  output = c('win', 'lose','win','lose','win','win','win','win','win','lose','lose'))
+  dataframe <- data_frame(id = c(1:20),
+  text = c("this is a this", 
+           "this is another",
+           'hello',
+           'what???',
+           "Wendy Wong", 
+           "is great", 
+           "intelligence", 
+           "strong and healthy",
+           "and positive", 
+           "and fuck the world",
+           "for thinking otherwise",
+           "now that I have", 
+           "to think ", 
+           "of another", 
+           "six sentences",
+           "what a chore!", 
+           "when would I be rich",
+           "next year?", 
+           "no more ", 
+           "than three years"),
+  value = c(200,400,120,300,320,110,430,903,703,390,123, 300, 129, 213, 432, 135, 675, 290, 182, 300),
+  output = c('win','lose','win','lose','win','win','win','win','win','lose',
+             'lose','lose','lose','win','win','win','lose','win','lose','lose'))
+  
+  dataframe2 <- data_frame(id = c(1:20),
+                           output = c('win','lose','win','lose','win','win','win','win','win','lose',
+                                      'lose','lose','lose','win','win','win','lose','win','lose','lose'),
+                          text = c("this is a this", 
+                                   "this is another",
+                                   'hello',
+                                   'what???',
+                                   "Wendy Wong", 
+                                   "is great", 
+                                   "intelligence", 
+                                   "strong and healthy",
+                                   "and positive", 
+                                   "and fuck the world",
+                                   "for thinking otherwise",
+                                   "now that I have", 
+                                   "to think ", 
+                                   "of another", 
+                                   "six sentences",
+                                   "what a chore!", 
+                                   "when would I be rich",
+                                   "next year?", 
+                                   "no more ", 
+                                   "than three years"),
+                          value = c(200,400,120,300,320,110,430,903,703,390,123, 300, 129, 213, 432, 135, 675, 290, 182, 300))
 
-  prep_fun = tolower
-  tok_fun = word_tokenizer
-
-  #create the tokens
-  train_tokens = dataframe$text %>% prep_fun %>% tok_fun
-
-  it_train = itoken(train_tokens)
-  vocab = create_vocabulary(it_train)
-  vectorizer = vocab_vectorizer(vocab)
-  dtm_train = create_dtm(it_train, vectorizer)
-
-  train <- as.h2o(dtm_train)
-  train$y <- as.h2o(dataframe$output)
+  train <- prepareFrame(dataframe)
+ # train2 <- prepareFrame(dataframe2)
 
   # Train any H2O model (e.g GBM)
   mymodel <- h2o.gbm(y = "y", training_frame = train,
   distribution = "bernoulli", seed = 1)
+  summary(mymodel)
+  
+#  mymodel2 <- h2o.gbm(y="y", training_frame=train2, distribution='bernoulli', seed=1)
+#  summary(mymodel2)
 
 }
 
+prepareFrame<-function(dataframe) {
+  prep_fun = tolower
+  tok_fun = word_tokenizer
+  
+  #create the tokens
+  train_tokens = dataframe$text %>% prep_fun %>% tok_fun
+  
+  it_train = itoken(train_tokens)
+  vocab = create_vocabulary(it_train)
+  vectorizer = vocab_vectorizer(vocab)
+  dtm_train = create_dtm(it_train, vectorizer)
+  
+  train <- as.h2o(dtm_train)
+  train$y <- as.h2o(dataframe$output)
+  
+  return(train)
+}
 # compare_frames <- function(f1, f2, number2Comp) {
 #   expect_equal(ncol(f1), ncol(f2))
 #   expect_equal(nrow(f1), nrow(f2))

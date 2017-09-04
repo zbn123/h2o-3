@@ -61,38 +61,54 @@ def is_load_global(instr):
 def is_return(instr):
     return "RETURN_VALUE" == instr
 
+try:
+    # Python 3
+    from dis import _unpack_opargs
+except ImportError:
+    # Reimplement from Python3 in Python2 syntax
+    def _unpack_opargs(code):
+        extended_arg = 0
+        i = 0
+        while i < len(code):
+            op = ord(code[i])
+            pos = i
+            if op >= HAVE_ARGUMENT:
+                arg = ord(code[i+1]) | extended_arg
+                extended_arg = (arg << 8) if op == EXTENDED_ARG else 0
+                i += 2
+            else:
+                arg = None
+            i += 1
+            yield (pos, op, arg)
 
-def _bytecode_decompile_lambda(co):
+
+def _disassemble_lambda(co):
     code = co.co_code
-    n = len(code)
-    i = 0
     ops = []
-    while i < n:
-        op = code[i]
-        if PY2:
-            op = ord(op)
+    for offset, op, arg in _unpack_opargs(code):
         args = []
-        i += 1
-        if op >= HAVE_ARGUMENT:
-            oparg = code[i] + code[i + 1] * 256
-            if PY2:
-                oparg = ord(code[i]) + ord(code[i + 1]) * 256
-            i += 2
+        if arg is not None:
             if op in hasconst:
-                args.append(co.co_consts[oparg])  # LOAD_CONST
+                args.append(co.co_consts[arg])  # LOAD_CONST
             elif op in hasname:
-                args.append(co.co_names[oparg])  # LOAD_CONST
+                args.append(co.co_names[arg])  # LOAD_CONST
             elif op in hasjrel:
                 raise ValueError("unimpl: op in hasjrel")
             elif op in haslocal:
-                args.append(co.co_varnames[oparg])  # LOAD_FAST
+                args.append(co.co_varnames[arg])  # LOAD_FAST
             elif op in hascompare:
-                args.append(cmp_op[oparg])  # COMPARE_OP
+                args.append(cmp_op[arg])  # COMPARE_OP
             elif is_func(opname[op]):
-                args.append(oparg)  # oparg == nargs(fcn)
+                args.append(arg)  # oparg == nargs(fcn)
         ops.append([opname[op], args])
-    return _lambda_bytecode_to_ast(co, ops)
 
+    return ops
+
+
+def lambda_to_expr(fun):
+    code = fun.__code__
+    lambda_dis = _disassemble_lambda(code)
+    return _lambda_bytecode_to_ast(code, lambda_dis)
 
 def _lambda_bytecode_to_ast(co, ops):
     # have a stack of ops, read from R->L to get correct oops

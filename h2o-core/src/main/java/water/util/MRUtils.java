@@ -1,16 +1,14 @@
 package water.util;
 
-import water.*;
-import water.H2O.H2OCallback;
-import water.H2O.H2OCountedCompleter;
+import water.H2O;
+import water.Key;
+import water.MRTask;
 import water.fvec.*;
-import water.nbhm.NonBlockingHashMap;
+import water.parser.BufferedString;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import water.parser.BufferedString;
 import static water.util.RandomUtils.getRNG;
 
 public class MRUtils {
@@ -128,6 +126,46 @@ public class MRUtils {
           _ys[(int) ys.at8(i)] += ws.atd(i);
     }
     @Override public void reduce( ClassDist that ) { ArrayUtils.add(_ys,that._ys); }
+  }
+
+  /**
+   * compute the number of rows in a frame.
+   */
+  public static class CountFrameRows extends MRTask<CountFrameRows> {
+    public long[] _rowsPerChunk;
+
+    public CountFrameRows(Frame frameToCount) {
+      int numberOfChunks = frameToCount.vec(0).nChunks();
+      _rowsPerChunk = new long[numberOfChunks];
+    }
+
+    public void map(Chunk[] chks) {
+      _rowsPerChunk[chks[0].cidx()] = _rowsPerChunk[chks[0].cidx()]+chks[0].len();  // add up number of rows
+    }
+
+    public void reduce(CountFrameRows that) {
+      for (int index = 0; index < _rowsPerChunk.length; index++) {
+        _rowsPerChunk[index] += that._rowsPerChunk[index];
+      }
+    }
+
+    public long getTotalRows() {
+      long result = 0;
+      for (int index = 0; index < _rowsPerChunk.length; index++) {
+        result += _rowsPerChunk[index];
+      }
+      return result;
+    }
+  }
+
+
+  public static class CountIntValueRows extends MRTask<CountIntValueRows> {
+    public long _numberAppear;
+    public int _value;
+
+    public CountIntValueRows(int value) {
+
+    }
   }
 
   public static class Dist extends MRTask<Dist> {

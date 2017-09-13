@@ -167,6 +167,7 @@ public class MRUtils {
     public long _value;
     public int _columnIndex;  // column where the values are to be counted
 
+
     public CountIntValueRows(long value, int columnInd, Frame fr) {
       if (fr.vec(columnInd).isCategorical() || fr.vec(columnInd).isInt()) {
         _value = value;

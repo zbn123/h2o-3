@@ -8,6 +8,7 @@ import water.fvec.Frame;
 import water.fvec.Vec;
 import water.util.ArrayUtils;
 import water.util.Log;
+import water.util.MRUtils;
 import water.util.MathUtils;
 
 import java.math.BigInteger;
@@ -40,7 +41,17 @@ class RadixOrder extends H2O.H2OCountedCompleter<RadixOrder> {
   @Override
   public void compute2() {
     long t0 = System.nanoTime(), t1;
+
+    long numberRows = new MRUtils.CountFrameRows(_DF).doAll(_DF).getTotalRows();  // count total number of rows in frame
+    long numberAppear = new MRUtils.CountIntValueRows(255553556456l, 0,_DF).doAll(_DF).getNumberAppear();
+    Log.info("RadixOrder.compute2 before initBaseShift ", "row number "+numberRows);
+    Log.info("RadixOrder.compute2 before initBaseShift ", "number of rows containing 255553556456 "+numberAppear);
     initBaseShift();
+
+    numberRows = new MRUtils.CountFrameRows(_DF).doAll(_DF).getTotalRows();  // count total number of rows in frame
+    numberAppear = new MRUtils.CountIntValueRows(255553556456l, 0,_DF).doAll(_DF).getNumberAppear();
+    Log.info("RadixOrder.compute2 after initBaseShift ", "row number "+numberRows);
+    Log.info("RadixOrder.compute2 after initBaseShift ", "number of rows containing 255553556456 "+numberAppear);
 
     // The MSB is stored (seemingly wastefully on first glance) because we need
     // it when aligning two keys in Merge()
@@ -54,6 +65,12 @@ class RadixOrder extends H2O.H2OCountedCompleter<RadixOrder> {
     if( _whichCols.length > 0 )
       new RadixCount(_isLeft, _base[0], _shift[0], _whichCols[0], _isLeft ? _id_maps : null).doAll(_DF.vec(_whichCols[0]));
     System.out.println("Time of MSB count MRTask left local on each node (no reduce): " + ((t1=System.nanoTime()) - t0) / 1e9); t0=t1;
+
+    numberRows = new MRUtils.CountFrameRows(_DF).doAll(_DF).getTotalRows();  // count total number of rows in frame
+    numberAppear = new MRUtils.CountIntValueRows(255553556456l, 0,_DF).doAll(_DF).getNumberAppear();
+    Log.info("RadixOrder.compute2 after RadixCount ", "row number "+numberRows);
+    Log.info("RadixOrder.compute2 after RadixCount ", "number of rows containing 255553556456 "+numberAppear);
+
 
     // NOT TO DO:  we do need the full allocation of x[] and o[].  We need o[] anyway.  x[] will be compressed and dense.
     // o is the full ordering vector of the right size
@@ -69,9 +86,20 @@ class RadixOrder extends H2O.H2OCountedCompleter<RadixOrder> {
       new SplitByMSBLocal(_isLeft, _base, _shift[0], keySize, batchSize, _bytesUsed, _whichCols, linkTwoMRTask, _id_maps).doAll(_DF.vecs(_whichCols)); // postLocal needs DKV.put()
     System.out.println("SplitByMSBLocal MRTask (all local per node, no network) took : " + ((t1=System.nanoTime()) - t0) / 1e9); t0=t1;
 
+    numberRows = new MRUtils.CountFrameRows(_DF).doAll(_DF).getTotalRows();  // count total number of rows in frame
+    numberAppear = new MRUtils.CountIntValueRows(255553556456l, 0,_DF).doAll(_DF).getNumberAppear();
+    Log.info("RadixOrder.compute2 after SplitByMSBLocal ", "row number "+numberRows);
+    Log.info("RadixOrder.compute2 after SplitByMSBLocal ", "number of rows containing 255553556456 "+numberAppear);
+
     if( _whichCols.length > 0 )
       new SendSplitMSB(linkTwoMRTask).doAllNodes();
     System.out.println("SendSplitMSB across all nodes took : " + ((t1=System.nanoTime()) - t0) / 1e9); t0=t1;
+
+    numberRows = new MRUtils.CountFrameRows(_DF).doAll(_DF).getTotalRows();  // count total number of rows in frame
+    numberAppear = new MRUtils.CountIntValueRows(255553556456l, 0,_DF).doAll(_DF).getNumberAppear();
+    Log.info("RadixOrder.compute2 after SendSplitMSB ", "row number "+numberRows);
+    Log.info("RadixOrder.compute2 after SendSplitMSB ", "number of rows containing 255553556456 "+numberAppear);
+
 
     // dispatch in parallel
     RPC[] radixOrders = new RPC[256];
@@ -79,13 +107,18 @@ class RadixOrder extends H2O.H2OCountedCompleter<RadixOrder> {
     for (int i = 0; i < 256; i++)
       radixOrders[i] = new RPC<>(SplitByMSBLocal.ownerOfMSB(i), new SingleThreadRadixOrder(_DF, _isLeft, batchSize, keySize, /*nGroup,*/ i)).call();
     System.out.println("took : " + ((t1=System.nanoTime()) - t0) / 1e9); t0=t1;
-
     System.out.print("Waiting for RPC SingleThreadRadixOrder to finish ... ");
     for( RPC rpc : radixOrders )
       rpc.get();
     System.out.println("took " + (System.nanoTime() - t0) / 1e9);
 
     tryComplete();
+
+    numberRows = new MRUtils.CountFrameRows(_DF).doAll(_DF).getTotalRows();  // count total number of rows in frame
+    numberAppear = new MRUtils.CountIntValueRows(255553556456l, 0,_DF).doAll(_DF).getNumberAppear();
+    Log.info("RadixOrder.compute2 after SingleThreadRadixOrder ", "row number "+numberRows);
+    Log.info("RadixOrder.compute2 after SingleThreadRadixOrder ", "number of rows containing 255553556456 "+numberAppear);
+
 
     // serial, do one at a time
 //    for (int i = 0; i < 256; i++) {

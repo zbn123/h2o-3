@@ -145,7 +145,7 @@ public class MRUtils {
 
     public void reduce(CountFrameRows that) {
       for (int index = 0; index < _rowsPerChunk.length; index++) {
-        _rowsPerChunk[index] += that._rowsPerChunk[index];
+        _rowsPerChunk[index] = Math.max(_rowsPerChunk[index], that._rowsPerChunk[index]);
       }
     }
 
@@ -158,13 +158,39 @@ public class MRUtils {
     }
   }
 
-
+  /**
+   * Look for the number of times a particular value (integer) appears in a
+   * column of a dataframel.
+   */
   public static class CountIntValueRows extends MRTask<CountIntValueRows> {
     public long _numberAppear;
-    public int _value;
+    public long _value;
+    public int _columnIndex;  // column where the values are to be counted
 
-    public CountIntValueRows(int value) {
+    public CountIntValueRows(long value, int columnInd, Frame fr) {
+      if (fr.vec(columnInd).isCategorical() || fr.vec(columnInd).isInt()) {
+        _value = value;
+        _columnIndex = columnInd;
+        _numberAppear = 0;
+      } else {
+        throw new IllegalArgumentException("The column data type must be categorical or integer.");
+      }
+    }
 
+    public void map(Chunk[] chks) {
+      int numRows = chks[0].len();
+      for (int index = 0; index < numRows; index++) {
+        if (chks[_columnIndex].at8(index) == _value)
+          _numberAppear++;
+      }
+    }
+
+    public void reduce(CountIntValueRows that) {
+      _numberAppear += that._numberAppear;
+    }
+
+    public long getNumberAppear() {
+      return _numberAppear;
     }
   }
 

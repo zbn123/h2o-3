@@ -9,7 +9,7 @@ pipeline {
 
     parameters {
       string(name: 'gitBranch', defaultValue: 'mr/feature/h2o3-runtime-docker', description: 'Branch to load the Dockerfile from.')
-      booleanParam(name: 'publishDockerImage', defaultValue: false, description: 'If true, publish the docker image')
+      booleanParam(name: 'publishDockerImage', defaultValue: true, description: 'If true, publish the docker image')
 
     }
 
@@ -35,6 +35,19 @@ pipeline {
             sh """
                 cd docker
                 docker build -t mr-h2o3-runtime .
+            """
+          }
+        }
+
+        stage ('Publich Docker Image') {
+          when {
+            expression { params.publishDockerImage }
+          }
+          steps {
+            sh """
+                docker login -u h2oai -p h2oai docker.h2o.ai
+                docker tag mr-h2o3-runtime:latest docker.h2o.ai/opsh2oai/mr-h2o3-runtime:latest
+                docker push docker.h2o.ai/opsh2oai/mr-h2o3-runtime:latest
             """
           }
         }

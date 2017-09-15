@@ -48,8 +48,6 @@ if [[ ! -n \${HOME} ]]; then
   exit 1
 fi
 
-mkdir -p /usr/local/R/current/bin/
-chmod a+w /usr/local/R/current/bin/
 ln -s -f /usr/local/R/${R_VERSION}/bin/R /usr/local/R/current/bin/R
 ln -s -f /usr/local/R/${R_VERSION}/bin/Rscript /usr/local/R/current/bin/Rscript""" > /usr/bin/activate_R_${R_VERSION}
 chmod a+x /usr/bin/activate_R_${R_VERSION}

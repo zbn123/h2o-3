@@ -1,0 +1,24 @@
+#
+# Docker image tagging
+#
+DOCKER_VERSION_TAG ?= "latest"
+
+H2OAI_COMMIT := $(shell git rev-parse HEAD)
+
+.NOTPARALLEL: all
+
+docker-runtime:
+	@echo "+--Building Runtime Docker Image--+"
+	docker build -t mr-h2o3-runtime:${DOCKER_VERSION_TAG} -f Dockerfile .
+
+build-h2o-3:
+	@echo "+--Building H2O-3--+"
+	@echo
+	@echo "+--Cleaning--+"
+	./gradlew clean
+	@echo
+	@echo "+--Building--+"
+	./gradlew build -x test
+
+test-phantomjs:
+	cd h2o-web && ../scripts/run.py --wipeall --test lib/h2o-flow/build/js/headless-test.js --jvm.xmx 4g

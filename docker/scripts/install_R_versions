@@ -19,9 +19,15 @@ wget https://s3.amazonaws.com/h2o-r/linux/LiblineaR_1.94-2.tar.gz
 
 IFS=',' read -r -a array <<< ${VERSIONS_TO_INSTALL}
 for r_version in "${array[@]}"; do
-  echo "Installing R ${r_version} and required libraries"
+  echo "Installing R ${r_version}"
   install_R_version ${r_version}
+
+  echo "Activating R ${r_version}"
+  mkdir -p /usr/local/R/current/bin/
+  chmod a+w /usr/local/R/current/bin/
   activate_R_${r_version}
+
+  echo "Installing R dependencies for R ${r_version}"
   /usr/local/R/current/bin/R -e 'chooseCRANmirror(graphics=FALSE, ind=54);install.packages(c("R.utils", "AUC", "mlbench", "Hmisc", "flexclust", "randomForest", "bit64", "HDtweedie", "RCurl", "jsonlite", "statmod", "devtools", "roxygen2", "testthat", "Rcpp", "fpc", "RUnit", "ade4", "glmnet", "gbm", "ROCR", "e1071", "ggplot2", "LiblineaR"))'
   /usr/local/R/current/bin/R CMD INSTALL LiblineaR_1.94-2.tar.gz
 done
